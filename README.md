@@ -1,2 +1,2 @@
-# moninigstar_etf_scraper
+# morningstar_etf_scraper
 Morningstar ETF Scraper
