@@ -6,7 +6,7 @@ from datetime import datetime
 # Lista de principales ETFs de alta liquidez y réplica global comercializados en España 
 # Cubre renta variable global, americana, europea, emergentes y sostenibilidad (ESG)
 tickers_etfs = [
-    "SPY", "QQQ", "IWM", "EUNN", "VGK", "IEFA", "VTI", "VOO", "ACWI", "IWDA.AS",
+    "SPY", "QQQ", "IWM", "EEM", "VGK", "IEFA", "VTI", "VOO", "ACWI", "IWDA.AS",
     "EURL.PA", "EXS1.DE", "MEUD.PA", "ANX.PA", "MVEU.PA", "SUSW.L", "SUAS.L", 
     "IUSA.L", "SREU.PA", "IS3N.DE", "IQQW.DE", "LYXIB.PA", "BBVA.MC", "TEF.MC"
 ]
