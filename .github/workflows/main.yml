@@ -22,7 +22,7 @@ jobs:
     - name: Instalar librerías necesarias
       run: |
         python -m pip install --upgrade pip
-        pip install pandas requests openpyxl
+        pip install pandas requests openpyxl yfinance
 
     - name: Ejecutar Extractor de Morningstar
       run: python descargar_morningstar.py
