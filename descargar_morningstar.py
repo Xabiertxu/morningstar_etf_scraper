@@ -3,8 +3,8 @@ import requests
 import pandas as pd
 from datetime import datetime
 
-# URL de la API oculta del buscador de Morningstar España
-API_URL = "https://data.morningstar.com/api/v2/search/v1/solr"
+# URL regionalizada de la API de Morningstar (Evita fallos de resolución de DNS)
+API_URL = "https://ie2api.morningstar.com/api/v2/search/v1/solr"
 
 # Parámetros necesarios para extraer la lista completa con los campos de las 4 secciones
 params = {
@@ -17,10 +17,11 @@ params = {
 }
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json"
 }
 
-print(f"[{datetime.now()}] Conectando con la API de Morningstar...")
+print(f"[{datetime.now()}] Conectando con la API Regional de Morningstar...")
 
 try:
     response = requests.get(API_URL, params=params, headers=headers)
@@ -73,7 +74,6 @@ try:
         try:
             df_existente = pd.read_excel(archivo_salida)
             df_final = pd.concat([df_existente, df_nuevo], ignore_index=True)
-            # Eliminamos duplicados basados en el ID único de Morningstar o ISIN manteniendo el último dato
             if "ID Morningstar" in df_final.columns:
                 df_final = df_final.drop_duplicates(subset=["ID Morningstar"], keep="last")
         except Exception:
