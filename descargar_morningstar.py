@@ -7,14 +7,12 @@ from datetime import datetime
 API_URL = "https://data.morningstar.com/api/v2/search/v1/solr"
 
 # Parámetros necesarios para extraer la lista completa con los campos de las 4 secciones
-# (General, Rentabilidad, Riesgo, Sostenibilidad)
 params = {
     "q": "*:*",
-    "fq": "AssetClass:\"ETF\" AND FundShareClassLocaleId:\"OSESP$$$$$\"", # Filtra por ETFs disponibles en España
+    "fq": "AssetClass:\"ETF\" AND FundShareClassLocaleId:\"OSESP$$$$$\"", 
     "wt": "json",
     "start": 0,
-    "rows": 5000, # Descarga hasta 5000 ETFs de golpe para asegurar la lista completa
-    # Campos seleccionados que cubren las 4 pestañas solicitadas:
+    "rows": 5000, 
     "fl": "Id,Name,LegalName,Ticker,ISIN,SecId,Universe,ClosePrice,Currency,ExchangeName,StandardDeviationThreeYear,SharpeRatioThreeYear,ReturnM1,ReturnM3,ReturnM12,Return3YrAvg,SustainabilityRating,CarbonScore"
 }
 
@@ -54,7 +52,7 @@ try:
             "Rentabilidad 1 Mes (%)": doc.get("ReturnM1"),
             "Rentabilidad 3 Meses (%)": doc.get("ReturnM3"),
             "Rentabilidad 12 Meses (%)": doc.get("ReturnM12"),
-            "Rentabilidad Anualizada 3 Añós (%)": doc.get("Return3YrAvg"),
+            "Rentabilidad Anualizada 3 Años (%)": doc.get("Return3YrAvg"),
             
             # --- SECCIÓN 3: RIESGO ---
             "Desviación Estándar (3y)": doc.get("StandardDeviationThreeYear"),
@@ -67,14 +65,25 @@ try:
         lista_etfs.append(etf)
 
     # Convertir a DataFrame de Pandas
-    df = pd.DataFrame(lista_etfs)
-    
-    # Nombre del archivo unificado
+    df_nuevo = pd.DataFrame(lista_etfs)
     archivo_salida = "lista_completa_etfs_morningstar.xlsx"
     
+    # Consolidar con datos anteriores si existen, evitando duplicados
+    if os.path.exists(archivo_salida):
+        try:
+            df_existente = pd.read_excel(archivo_salida)
+            df_final = pd.concat([df_existente, df_nuevo], ignore_index=True)
+            # Eliminamos duplicados basados en el ID único de Morningstar o ISIN manteniendo el último dato
+            if "ID Morningstar" in df_final.columns:
+                df_final = df_final.drop_duplicates(subset=["ID Morningstar"], keep="last")
+        except Exception:
+            df_final = df_nuevo
+    else:
+        df_final = df_nuevo
+
     # Guardar en Excel con formato limpio
-    df.to_excel(archivo_salida, index=False)
-    print(f"¡Éxito! Archivo '{archivo_salida}' generado con {len(df)} ETFs procesados.")
+    df_final.to_excel(archivo_salida, index=False)
+    print(f"¡Éxito! Archivo '{archivo_salida}' generado con {len(df_final)} ETFs totales procesados.")
 
 except Exception as e:
     print(f"Error durante la ejecución del scraping: {e}")
